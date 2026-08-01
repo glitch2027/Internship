@@ -23,6 +23,17 @@ Contains the core metadata for all mutual funds.
 | `risk_grade` | TEXT | Risk classification (Low, Moderate, High, Very High). |
 | `launch_date` | DATE | Inception date of the scheme. |
 
+### `dim_date` (Date Dimension)
+Generated table for time-based aggregation.
+| Column Name | Data Type | Description |
+| :--- | :--- | :--- |
+| `date_id` | DATE (PK) | Date string YYYY-MM-DD. |
+| `year` | INTEGER | Year (e.g. 2023). |
+| `month` | INTEGER | Month (1-12). |
+| `day` | INTEGER | Day of month (1-31). |
+| `day_of_week`| TEXT | Name of day (Monday, Tuesday). |
+| `is_weekend` | BOOLEAN | True if Saturday or Sunday. |
+
 ---
 
 ## Fact Tables
@@ -47,6 +58,7 @@ Contains individual transaction records. (Note: Synthetic data for analytical pu
 | `amount` | REAL | Value of the transaction. (Cleaned: > 0). |
 | `transaction_date`| DATE | Formatted as YYYY-MM-DD. |
 | `kyc_status` | TEXT | 'Verified', 'Pending', 'Rejected'. |
+| `state` | TEXT | Indian state location of the transaction. |
 
 ### `fact_performance` (Fund Returns & Ratios)
 Contains annualized returns and expense metrics.
