@@ -17,20 +17,23 @@ WHERE amfi_code = 125497
 GROUP BY month
 ORDER BY month DESC;
 
--- 3. Total SIP Inflows by Month (from monthly_sip table)
+-- 3. SIP YoY growth (Comparing 2023 vs previous data if exists, simulating with month-over-month growth)
 SELECT 
     month, 
-    total_sip_inflow_cr 
+    total_sip_inflow_cr,
+    LAG(total_sip_inflow_cr) OVER (ORDER BY month) as prev_month_inflow,
+    (total_sip_inflow_cr - LAG(total_sip_inflow_cr) OVER (ORDER BY month)) / LAG(total_sip_inflow_cr) OVER (ORDER BY month) * 100.0 as growth_pct
 FROM monthly_sip 
 ORDER BY month DESC;
 
--- 4. Transactions grouped by KYC status
+-- 4. Transactions by state
 SELECT 
-    kyc_status, 
+    state, 
     COUNT(transaction_id) as txn_count, 
     SUM(amount) as total_volume
 FROM fact_transactions
-GROUP BY kyc_status;
+GROUP BY state
+ORDER BY total_volume DESC;
 
 -- 5. Funds with expense_ratio < 1%
 SELECT 
@@ -59,7 +62,7 @@ FROM fact_transactions
 WHERE transaction_type IN ('Redemption', 'Lumpsum')
 GROUP BY transaction_type;
 
--- 8. Total AUM by Fund Category (using average AUM representation)
+-- 8. Total AUM by Fund Category (using count of funds as proxy for size)
 SELECT 
     f.category, 
     COUNT(f.amfi_code) as total_funds
