@@ -3,11 +3,15 @@ import glob
 import pandas as pd
 
 def load_and_summarize_datasets(raw_dir="data/raw"):
-    csv_files = glob.glob(os.path.join(raw_dir, "*.csv"))
+    # Only load the 10 provided CSVs (which are numbered 01_ to 10_)
+    # This prevents loading the live NAV fetched CSVs which don't have this prefix
+    csv_files = [f for f in glob.glob(os.path.join(raw_dir, "*.csv")) 
+                 if os.path.basename(f)[:2].isdigit() and os.path.basename(f)[2] == '_']
     
-    if not csv_files:
-        print(f"No CSV datasets found in {raw_dir}")
-        return {}
+    if len(csv_files) != 10:
+        print(f"Expected 10 core CSV datasets, but found {len(csv_files)} in {raw_dir}")
+        if not csv_files:
+            return {}
 
     print(f"Found {len(csv_files)} CSV files. Loading and summarizing...\n")
     
